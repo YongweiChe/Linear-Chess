@@ -20,6 +20,12 @@ class Chess {
             {type: 'king', color: 'black'}
         ];
 
+        this.state = {
+            board: [...STARTING_BOARD],
+            isWhiteTurn: true,
+            moveCount: 1,
+            kings: {white: 0, black: 17}
+        }
 
         this.board = [...STARTING_BOARD];
         this.isWhiteTurn = true;
@@ -264,6 +270,11 @@ class Chess {
 let game = new Chess();
 
 console.log(game.getBoard());
-console.log(game.moves(6));
-console.log(game.moves(5));
+game.move(6,8);
+game.move(11,9);
+game.move(8,9);
+game.move(17, 10);
+
+console.log(game.getBoard());
+console.log(game.getAllMoves('white'));
 console.log(game.getAllMoves('black'));

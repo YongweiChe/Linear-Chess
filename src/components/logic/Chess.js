@@ -62,7 +62,9 @@ class Chess {
             }
             
         }
+        console.log(gameState.isWhiteTurn);
         gameState.isWhiteTurn = !gameState.isWhiteTurn;
+        console.log(gameState.isWhiteTurn);
         gameState.moveCount++;
     }
 

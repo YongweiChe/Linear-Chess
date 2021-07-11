@@ -60,11 +60,15 @@ class Chess {
                 if (piece.color === 'white') gameState.kings.white = to;
                 else gameState.kings.black = to;
             }
+            if (piece.type === 'pawn') {
+               if (piece.color === 'white') {
+                   if (piece.color.white) piece.color.white = false;
+               }
+               else piece.color.black = false;
+            }
             
         }
-        console.log(gameState.isWhiteTurn);
         gameState.isWhiteTurn = !gameState.isWhiteTurn;
-        console.log(gameState.isWhiteTurn);
         gameState.moveCount++;
     }
 
@@ -171,7 +175,6 @@ class Chess {
             if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
 
             if(gameState.pawns.white) {
-                gameState.pawns.white = false;
                 this.jump(from, from + 2, moves, color, gameState.board);
             }
         }
@@ -179,7 +182,6 @@ class Chess {
             if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
 
             if(gameState.pawns.black) {
-                gameState.pawns.black = false;
                 this.jump(from, from - 2, moves, color, gameState.board);
             }
         }

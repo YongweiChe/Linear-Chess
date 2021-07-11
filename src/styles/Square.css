@@ -12,8 +12,8 @@ h1 {
 }
 
 .square {
-  width: 5.55555%;
-  height: 5.55555%;
+  width: 100%;
+  height: 100%;
 }
 
 .dark {
@@ -23,6 +23,15 @@ h1 {
 .light {
   background-color: white;
 }
+
+.selected {
+  background-color: rgb(250, 66, 66);
+}
+
+.legal {
+  background-color: rgb(255, 255, 125);
+}
+
 .filler {
   width: 100%;
   height: 100%;
@@ -36,11 +45,16 @@ h1 {
   justify-content: center;
 }
 
+.squareContainer {
+  width: 5.55555%;
+  height: 5.55555%;
+}
+
 .grab {
   cursor: grab;
 }
 
 .piece {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 110%;
+  max-height: 110%;
 }

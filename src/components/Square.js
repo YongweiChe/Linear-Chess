@@ -1,9 +1,9 @@
 import React from 'react';
 import Piece from './Piece';
 import Empty from './Empty';
-import './Square.css';
+import '../styles/Square.css';
 
-function Square({piece, color}) {
+function Square({piece, color, selected}) {
     let sqrColor = color ? 'dark' : 'light'
     if (piece) {
         return (

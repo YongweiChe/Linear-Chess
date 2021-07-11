@@ -28,7 +28,7 @@ function Piece({color, type}) {
         whitepawn: wp,
     }
     return (
-            <div className="container grab" onClick={() => console.log(type)}><img className="piece" alt="piece" src={pieces[`${color}${type}`]}></img></div>
+            <div className="container grab"><img className="piece" alt="piece" src={pieces[`${color}${type}`]}></img></div>
     );
 }
 

@@ -1,48 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import Square from './Square';
-import Chess from './logic/Chess';
-import './Square.css'
+import Chess from '../logic/Chess';
+import '../styles/Square.css';
 
 function Board() {
     console.log("here");
     const [game, setGame] = useState(new Chess());
-    const [squares, setSquares] = useState(() => {
+    const [selected, setSelected] = useState(null);
+
+    const updateBoard = () => {
         return game.getBoard().map((sqr, i) => {
             let color = (i % 2 === 0);
+            let isSelected = selected === i;
             return (
-                <Square piece={sqr} key={i} color={color}/>
+                <Square piece={sqr} key={i} color={color} selected={isSelected}/>
             )
         });
+    }
+
+    const [squares, setSquares] = useState(() => {
+        return updateBoard();
     });
 
-    const [move, setMove] = useState(() => {
-        console.log("in here");
-        return 0;
-    });
-
-    const handleMove = () => {
+    const randMove = () => {
         let allMoves = game.getAllMoves(game.getTurn());
-        console.log(game.getTurn());
         let randMove = Math.floor(Math.random() * allMoves.length);
         game.move(allMoves[randMove].from, allMoves[randMove].to);
         setSquares(() => {
-            return game.getBoard().map((sqr, i) => {
-                let color = (i % 2 === 0);
-                return (
-                    <Square piece={sqr} key={i} color={color}/>
-                )
-            });
+            return updateBoard();
         });
-        setMove(prevMove => prevMove + 1);
-        console.log(allMoves);
-        console.log(game.getBoard());
     }
             
     return (
         <div className="board">
             {squares}
-            <button onClick={() => handleMove()}></button>
-            {move}
+            <button onClick={() => randMove()}></button>
         </div>
     );
 }

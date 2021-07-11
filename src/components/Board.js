@@ -1,38 +1,19 @@
 import React from 'react';
 import Square from './Square';
+import './Square.css'
 
-class Board extends React.Component {
-    constructor(props) {
-        super(props);
-        const startingPos = ["king", "king", "king","king","king","king","king","king","king",];
-        this.state = { 
-            moves: 0,
-            squares: startingPos,
-            whiteTurn: true
-        };
-    }
+function Board({board}) {
 
-    componentDidMount() {
-        
-        this.setState((state, props) => {
-            return (
-                {moves: 1}
-            );
-        })
-    }
+    let squares = board.map((sqr, i) => {
+        let color = (i % 2 === 0);
+        return <Square piece={sqr} key={i} color={color}/>
+    });
 
-    render() {
-
-        return (
-            <div>
-                {this.state.squares.map((square, index) => {
-                    return (
-                    <Square key={index} piece={square} />)
-                    ;
-                })}
+    return (
+            <div className="board">
+                {squares}
             </div>
-        );
-    }
+    );
 }
 
 export default Board;

@@ -1,13 +1,18 @@
 import React from 'react';
+import Piece from './Piece';
+import Empty from './Empty';
+import './Square.css';
 
-class Square extends React.Component {
-    render() {
+function Square({piece, color}) {
+    let sqrColor = color ? 'dark' : 'light'
+    if (piece) {
         return (
-            <div onClick={() => console.log("hello")}>
-                {this.props.piece}
-            </div>
+            <div className={`square ${sqrColor}`}><Piece color={piece.color} type={piece.type}/></div>
         );
     }
+    return (
+        <div className={`square ${sqrColor}`}><Empty /></div>
+    )
 }
 
 export default Square;

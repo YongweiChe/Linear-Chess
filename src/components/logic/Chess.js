@@ -20,7 +20,7 @@ class Chess {
             {type: 'king', color: 'black'}
         ];
 
-        this.state = {
+        this.gameState = {
             board: [...STARTING_BOARD],
             isWhiteTurn: true,
             moveCount: 1,
@@ -30,57 +30,57 @@ class Chess {
     }
 
     getBoard() { // returns array of board
-        return this.state.board;
+        return this.gameState.board;
     }
 
     getTurn() {
-        return this.state.isWhiteTurn ? 'white' : 'black';
+        return this.gameState.isWhiteTurn ? 'white' : 'black';
     }
 
     getMoveCount() {
-        return this.state.moveCount;
+        return this.gameState.moveCount;
     }
 
     get(square) { // gets piece on square
-        return this.state.board[square];
+        return this.gameState.board[square];
     }
     
     move(from, to) {
-        this.tmove(from, to, this.state);
+        this.tmove(from, to, this.gameState);
     }
 
-    tmove(from, to, state) { // moves a piece
-        const piece = state.board[from];
+    tmove(from, to, gameState) { // moves a piece
+        const piece = gameState.board[from];
 
         if (piece !== null) {
-            state.board[from] = null;
-            state.board[to] = piece;
+            gameState.board[from] = null;
+            gameState.board[to] = piece;
             
             if (piece.type === 'king') {
-                if (piece.color === 'white') state.kings.white = to;
-                else state.kings.black = to;
+                if (piece.color === 'white') gameState.kings.white = to;
+                else gameState.kings.black = to;
             }
             
         }
-        state.isWhiteTurn = !state.isWhiteTurn;
-        state.moveCount++;
+        gameState.isWhiteTurn = !gameState.isWhiteTurn;
+        gameState.moveCount++;
     }
 
     attacks(square) {
-        return this.tattacks(square, this.state);
+        return this.tattacks(square, this.gameState);
     }
 
-    tattacks(square, state) { // generates attacks for a piece
-        let piece = state.board[square];
+    tattacks(square, gameState) { // generates attacks for a piece
+        let piece = gameState.board[square];
         let type = piece.type;
         let color = piece.color;
         let moves = [];
-        if (type === 'king') moves = this.kingMoves(color, square, state);
-        else if (type === 'queen') moves = this.queenMoves(color, square, state);
-        else if (type === 'rook') moves = this.rookMoves(color, square, state);
-        else if (type === 'bishop') moves = this.bishopMoves(color, square, state);
-        else if (type === 'knight') moves = this.knightMoves(color, square, state);
-        else if (type === 'pawn') moves = this.pawnMoves(color, square, state);
+        if (type === 'king') moves = this.kingMoves(color, square, gameState);
+        else if (type === 'queen') moves = this.queenMoves(color, square, gameState);
+        else if (type === 'rook') moves = this.rookMoves(color, square, gameState);
+        else if (type === 'bishop') moves = this.bishopMoves(color, square, gameState);
+        else if (type === 'knight') moves = this.knightMoves(color, square, gameState);
+        else if (type === 'pawn') moves = this.pawnMoves(color, square, gameState);
 
         return moves.map((move) => {
             return move.to;
@@ -88,55 +88,69 @@ class Chess {
     }
 
     getAllAttacks(color) {
-        return this.tgetAllAttacks(color, this.state);
+        return this.tgetAllAttacks(color, this.gameState);
     }
 
-    tgetAllAttacks(color, state) {
+    tgetAllAttacks(color, gameState) {
         let attacks = [];
-        for (let i = 0; i < state.board.length; i++) {
-            if (state.board[i] && state.board[i].color === color) {
-                attacks = attacks.concat(this.tattacks(i, state));
+        for (let i = 0; i < gameState.board.length; i++) {
+            if (gameState.board[i] && gameState.board[i].color === color) {
+                attacks = attacks.concat(this.tattacks(i, gameState));
             }
         }
         return attacks;
     }
 
     moves(square) {
-        return this.tmoves(square, this.state);
+        return this.tmoves(square, this.gameState);
     }
 
-    tmoves(square, state) { // generates legal moves
-        let piece = state.board[square];
+    tmoves(square, gameState) { // generates legal moves
+        let piece = gameState.board[square];
         let type = piece.type;
         let color = piece.color;
         let moves = [];
-        if (type === 'king') moves = this.kingMoves(color, square, state);
-        else if (type === 'queen') moves = this.queenMoves(color, square, state);
-        else if (type === 'rook') moves = this.rookMoves(color, square, state);
-        else if (type === 'bishop') moves = this.bishopMoves(color, square, state);
-        else if (type === 'knight') moves = this.knightMoves(color, square, state);
-        else if (type === 'pawn') moves = this.pawnMoves(color, square, state);
+        if (type === 'king') moves = this.kingMoves(color, square, gameState);
+        else if (type === 'queen') moves = this.queenMoves(color, square, gameState);
+        else if (type === 'rook') moves = this.rookMoves(color, square, gameState);
+        else if (type === 'bishop') moves = this.bishopMoves(color, square, gameState);
+        else if (type === 'knight') moves = this.knightMoves(color, square, gameState);
+        else if (type === 'pawn') moves = this.pawnMoves(color, square, gameState);
 
-        let legalMoves = [];
         if (this.in_check()) {
+            let legalMoves = [];
             for (let i = 0; i < moves.length; i++) {
-                let theoreticalBoard = state.board.map(x => x); //this.board.map
-                let theoreticalState = {
+                let theoreticalBoard = gameState.board.map(x => x); //this.board.map
+                let theoreticalgameState = {
                     board: theoreticalBoard,
-                    isWhiteTurn: state.isWhiteTurn,
-                    moveCount: state.moveCount,
-                    kings: {white: state.kings.white, black: state.kings.black},
-                    pawns: {white: state.pawns.white, black: state.pawns.black}
+                    isWhiteTurn: gameState.isWhiteTurn,
+                    moveCount: gameState.moveCount,
+                    kings: {white: gameState.kings.white, black: gameState.kings.black},
+                    pawns: {white: gameState.pawns.white, black: gameState.pawns.black}
                 };
-                this.tmove(moves[i].from, moves[i].to, theoreticalState);
+                this.tmove(moves[i].from, moves[i].to, theoreticalgameState);
 
-                if (!this.tin_check(color, theoreticalState)) {
+                if (!this.tin_check(color, theoreticalgameState)) {
                     legalMoves.push(moves[i]);
                 }
             }
+            return legalMoves;
         }
+        return moves;
+    }
 
-        return legalMoves;
+
+    getAllMoves(color) { // gets all moves for color
+        let allMoves = [];
+    
+        for (let i = 0; i < this.gameState.board.length; i++) {
+            if (this.gameState.board[i] && this.gameState.board[i].color === color) {
+                let m = this.moves(i);
+
+                allMoves = allMoves.concat(m);
+            }
+        }
+        return allMoves;
     }
 
     createMove(f, t) {
@@ -149,46 +163,46 @@ class Chess {
         }
     }
 
-    pawnMoves(color, from, state) { // FIX LOGIC
+    pawnMoves(color, from, gameState) { // FIX LOGIC
         let moves = [];
         if (color === 'white') {
-            if (from < 17) this.jump(from, from + 1, moves, color, state.board);
+            if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
 
-            if(state.pawns.white) {
-                state.pawns.white = false;
-                this.jump(from, from + 2, moves, color, state.board);
+            if(gameState.pawns.white) {
+                gameState.pawns.white = false;
+                this.jump(from, from + 2, moves, color, gameState.board);
             }
         }
         else {
-            if (from > 0) this.jump(from, from - 1, moves, color, state.board);
+            if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
 
-            if(state.pawns.black) {
-                state.pawns.black = false;
-                this.jump(from, from - 2, moves, color, state.board);
+            if(gameState.pawns.black) {
+                gameState.pawns.black = false;
+                this.jump(from, from - 2, moves, color, gameState.board);
             }
         }
         return moves;
     }
 
-    knightMoves(color, from, state) {
+    knightMoves(color, from, gameState) {
         let moves = [];
 
-        if (from + 2 < 18) this.jump(from, from + 2, moves, color, state.board);
-        if (from + 3 < 18) this.jump(from, from + 3, moves, color, state.board);
-        if (from - 2 >= 0)  this.jump(from, from - 2, moves, color, state.board);
-        if (from - 2 >= 0)  this.jump(from, from - 3, moves, color, state.board);
+        if (from + 2 < 18) this.jump(from, from + 2, moves, color, gameState.board);
+        if (from + 3 < 18) this.jump(from, from + 3, moves, color, gameState.board);
+        if (from - 2 >= 0)  this.jump(from, from - 2, moves, color, gameState.board);
+        if (from - 2 >= 0)  this.jump(from, from - 3, moves, color, gameState.board);
 
         return moves;
     }
 
-    bishopMoves(color, from, state) {
+    bishopMoves(color, from, gameState) {
         let moves = [];
         const dist = 2;
         let to = from + dist;
         let hitPiece = false;
         while (to < 18 && !hitPiece) {
-            if (state.board[to] !== null) hitPiece = true;
-            this.jump(from, to, moves, color, state.board);
+            if (gameState.board[to] !== null) hitPiece = true;
+            this.jump(from, to, moves, color, gameState.board);
             to += dist;
         }
 
@@ -196,60 +210,48 @@ class Chess {
         hitPiece = false;
 
         while (to >= 0  && !hitPiece) {
-            if (state.board[to] !== null) hitPiece = true;
-            this.jump(from, to, moves, color, state.board);
+            if (gameState.board[to] !== null) hitPiece = true;
+            this.jump(from, to, moves, color, gameState.board);
             to -= dist;
         }
 
         return moves
     }
 
-    rookMoves(color, from, state) {
+    rookMoves(color, from, gameState) {
         let moves = [];
         const dist = 1;
         let to = from + dist;
 
         while (to < 18) {
-            if (state.board[to] !== null) break;
-            this.jump(from, to, moves, color, state.board);
+            if (gameState.board[to] !== null) break;
+            this.jump(from, to, moves, color, gameState.board);
             to += dist;
         }
 
         to = from - dist;
 
         while (to >= 0) {
-            if (state.board[to] !== null) break;
-            this.jump(from, to, moves, color, state.board);
+            if (gameState.board[to] !== null) break;
+            this.jump(from, to, moves, color, gameState.board);
             to -= dist;
         }
 
         return moves
     }
 
-    queenMoves(color, from, state) {
-        return this.bishopMoves(color, from, state).concat(this.rookMoves(color, from, state));
+    queenMoves(color, from, gameState) {
+        return this.bishopMoves(color, from, gameState).concat(this.rookMoves(color, from, gameState));
     }
 
-    kingMoves(color, from, state) {
+    kingMoves(color, from, gameState) {
         let moves = [];
-        if (from < 17) this.jump(from, from + 1, moves, color, state.board);
-        if (from > 0) this.jump(from, from - 1, moves, color, state.board);
+        if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
+        if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
 
         return moves;
     }
 
-    getAllMoves(color) { // gets all moves for color
-        let allMoves = [];
-    
-        for (let i = 0; i < this.state.board.length; i++) {
-            if (this.state.board[i] && this.state.board[i].color === color) {
-                let m = this.moves(i);
-
-                allMoves = allMoves.concat(m);
-            }
-        }
-        return allMoves;
-    }
 
     game_over() { // returns boolean whether game is over
         if (this.in_checkmate() || this.in_stalemate() || this.in_draw()) {
@@ -259,24 +261,24 @@ class Chess {
     }
 
     in_check() { // checks whether king is in check
-        let color = this.state.isWhiteTurn ? 'white' : 'black';
-        return this.tin_check(color, this.state);
+        let color = this.gameState.isWhiteTurn ? 'white' : 'black';
+        return this.tin_check(color, this.gameState);
     }
 
-    tin_check(color, state) {
+    tin_check(color, gameState) {
         let oppColor = (color === 'white') ? 'black' : 'white'; // IS THIS RIGHT???
-        let kingPos = (color === 'white') ? state.kings.white : state.kings.black;
-        if (this.tgetAllAttacks(oppColor, state).includes(kingPos)) return true;
+        let kingPos = (color === 'white') ? gameState.kings.white : gameState.kings.black;
+        if (this.tgetAllAttacks(oppColor, gameState).includes(kingPos)) return true;
         return false;
     }
 
     in_checkmate() { // checks whether king is in checkmate
-        if (!this.getAllMoves(this.state.isWhiteTurn ? 'white' : 'black') && this.in_check()) return true;
+        if (!this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black') && this.in_check()) return true;
         return false;
     }
 
     in_stalemate() { // checks whether stalemate
-        if (!this.getAllMoves(this.state.isWhiteTurn ? 'white' : 'black') && !this.in_check()) return true;
+        if (!this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black') && !this.in_check()) return true;
         return false;
     }
 
@@ -285,19 +287,19 @@ class Chess {
     }
 }
 
-// TESTING
-
-let game = new Chess();
-
+export default Chess;
+/*
+game = new Chess();
 
 game.move(6,8);
 game.move(11,9);
 game.move(5,6);
 game.move(17,10);
 game.move(8,9);
+
 console.log(game.getBoard());
-//console.log(game.getAllMoves('white'));
+
+console.log(game.moves(6));
+console.log(game.getAllMoves('white'));
 //console.log(game.getAllMoves('black'));
-console.log(game.in_check());
-console.log(game.getTurn());
-console.log(game.getAllMoves('black'));
+*/

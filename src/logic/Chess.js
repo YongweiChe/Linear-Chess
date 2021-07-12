@@ -202,8 +202,15 @@ class Chess {
     }
 
     bishopMoves(color, from, gameState) {
+        return this.brMoves(color, from, gameState, 2);
+    }
+
+    rookMoves(color, from, gameState) {
+        return this.brMoves(color, from, gameState, 1);
+    }
+
+    brMoves(color, from, gameState, dist) {
         let moves = [];
-        const dist = 2;
         let to = from + dist;
         let hitPiece = false;
         while (to < 18 && !hitPiece) {
@@ -217,28 +224,6 @@ class Chess {
 
         while (to >= 0  && !hitPiece) {
             if (gameState.board[to] !== null) hitPiece = true;
-            this.jump(from, to, moves, color, gameState.board);
-            to -= dist;
-        }
-
-        return moves
-    }
-
-    rookMoves(color, from, gameState) {
-        let moves = [];
-        const dist = 1;
-        let to = from + dist;
-
-        while (to < 18) {
-            if (gameState.board[to] !== null) break;
-            this.jump(from, to, moves, color, gameState.board);
-            to += dist;
-        }
-
-        to = from - dist;
-
-        while (to >= 0) {
-            if (gameState.board[to] !== null) break;
             this.jump(from, to, moves, color, gameState.board);
             to -= dist;
         }

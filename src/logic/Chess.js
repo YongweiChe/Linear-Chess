@@ -62,9 +62,11 @@ class Chess {
             }
             if (piece.type === 'pawn') {
                if (piece.color === 'white') {
-                   if (piece.color.white) piece.color.white = false;
+                   if (gameState.pawns.white) gameState.pawns.white = false;
                }
-               else piece.color.black = false;
+               else {
+                   if (gameState.pawns.black) gameState.pawns.black = false;
+               }
             }
             
         }
@@ -174,14 +176,14 @@ class Chess {
         if (color === 'white') {
             if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
 
-            if(gameState.pawns.white) {
+            if(gameState.pawns.white && !gameState.board[from + 1]) {
                 this.jump(from, from + 2, moves, color, gameState.board);
             }
         }
         else {
             if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
 
-            if(gameState.pawns.black) {
+            if(gameState.pawns.black && !gameState.board[from - 1]) {
                 this.jump(from, from - 2, moves, color, gameState.board);
             }
         }

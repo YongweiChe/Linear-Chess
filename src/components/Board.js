@@ -9,13 +9,25 @@ function Board() {
     const [selectedSquare, setSelectedSquare] = useState(0);
 
     const onSelection = (id) => {
-        setIsSelected(() => {
-            if (!isSelected) return true;
-            if (isSelected && id === selectedSquare) return false;
-            return true;
-        });
-        setSelectedSquare(id);
+        if (game.get(selectedSquare) && 
+            isSelected && 
+            game.get(selectedSquare).color === game.getTurn() &&
+            game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
+            {
+                game.move(selectedSquare, id);
+                updateBoard();
+                setIsSelected(false);
+        }
+        else if (game.get(id)){
+            setIsSelected(() => {
+                if (!isSelected) return true;
+                if (isSelected && id === selectedSquare) return false;
+                return true;
+            });
+            setSelectedSquare(id);
+        }
     }
+
     const updateBoard = () => {
         let legalMoves = [];
         if (isSelected && game.get(selectedSquare)) legalMoves = game.moves(selectedSquare).map(move => {
@@ -60,9 +72,11 @@ function Board() {
     }
             
     return (
-        <div className="board">
-            {updateBoard()}
-            <button onClick={() => randMove()}></button>
+        <div>
+            <div className="board">
+                {updateBoard()}
+            </div>
+            <p>It is {game.getTurn()}'s turn</p>
         </div>
     );
 }

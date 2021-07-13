@@ -2,24 +2,24 @@ import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
 import '../styles/Square.css';
-import io from "socket.io-client";
+// import io from "socket.io-client";
 
-const socket = io("http://localhost:3000")
+// const socket = io("http://localhost:3000")
 
 
-
-function Board() {
+function Board({room, socket}) {
     const [game, setGame] = useState(new Chess());
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [isYourMove, setIsYourMove] = useState(true);
 
     useEffect(() => {
         socket.on('move', function(msg) {
             game.move(msg.from, msg.to);
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 
-            
+            setIsYourMove(true);
             onSelection(msg.to);
             setIsSelected(false);
         })
@@ -31,14 +31,18 @@ function Board() {
 
     const onSelection = (id) => {
         
-        if (game.get(selectedSquare) && 
+        if (isYourMove &&
+            game.get(selectedSquare) && 
             isSelected && 
             game.get(selectedSquare).color === game.getTurn() &&
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
 
             game.move(selectedSquare, id);
-            socket.emit('move', {from: selectedSquare, to: id});
+            setIsYourMove(false);
+
+            socket.emit('move', ({from: selectedSquare, to: id, room: room}));
+
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 
 
@@ -124,13 +128,13 @@ function Board() {
     }        
     return (
         <div>
+            <p>Room: {room}</p>
             <div className="board">
                 {updateBoard()}
             </div>
             <br/>
-            <p>It is {game.getTurn()}'s turn</p>
+            <p><b>Your Move:</b> {`${isYourMove}`}</p>
             {displayGameOver()}
-
         </div>
     );
 }

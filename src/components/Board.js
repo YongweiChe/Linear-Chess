@@ -8,7 +8,6 @@ function Board() {
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
-    const [draggedPiece, setDraggedPiece] = useState(null);
 
     const onSelection = (id) => {
         if (game.get(selectedSquare) && 
@@ -30,18 +29,6 @@ function Board() {
             setSelectedSquare(id);
         }
     }
-
-    const moveDragged = (id) => {
-        if (game.get(draggedPiece) && 
-            game.get(draggedPiece).color === game.getTurn() &&
-            game.moves(draggedPiece).map(sqr => sqr.to).includes(id)) 
-        {
-            game.move(draggedPiece, id);
-            if (game.in_checkmate()) setIsGameOver(true); 
-            if (game.in_stalemate()) setIsGameOver(true); 
-            setIsSelected(false);
-        }
-    }
     
     // DRAG AND DROP FUNCTIONALITY
     const handleDragEnter = e => {
@@ -59,12 +46,12 @@ function Board() {
     const handleDrop = (e, i) => {
         e.preventDefault();
         e.stopPropagation();
-        moveDragged(i);
-        setDraggedPiece(null);
+        onSelection(i);
     };
 
     const handleDrag = (i) => {
-        setDraggedPiece(i);
+        setIsSelected(true);
+        setSelectedSquare(i);
     }
 
     const updateBoard = () => {

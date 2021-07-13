@@ -17,23 +17,24 @@ h1 {
 .square {
   width: 100%;
   height: 100%;
-  border: 1px solid black;
 }
 
 .dark {
-  background-color: #2f71cc;
+  background-color: #8ca2ad;
 }
 
 .light {
-  background-color: white;
+  background-color: #dee3e6;
 }
 
 .selected {
-  background-color: rgb(250, 66, 66);
+  background-color: #e66a6a;
+  filter: drop-shadow(4px 4px 8px #e66a6a);
 }
 
 .legal {
-  background-color: rgb(255, 255, 125);
+  background-color: #fdfd96;
+  filter: drop-shadow(4px 4px 8px lightgray);
 }
 
 .filler {

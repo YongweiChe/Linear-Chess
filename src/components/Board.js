@@ -8,6 +8,7 @@ function Board() {
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [draggedPiece, setDraggedPiece] = useState(null);
 
     const onSelection = (id) => {
         if (game.get(selectedSquare) && 
@@ -30,6 +31,42 @@ function Board() {
         }
     }
 
+    const moveDragged = (id) => {
+        if (game.get(draggedPiece) && 
+            game.get(draggedPiece).color === game.getTurn() &&
+            game.moves(draggedPiece).map(sqr => sqr.to).includes(id)) 
+        {
+            game.move(draggedPiece, id);
+            if (game.in_checkmate()) setIsGameOver(true); 
+            if (game.in_stalemate()) setIsGameOver(true); 
+            setIsSelected(false);
+        }
+    }
+    
+    // DRAG AND DROP FUNCTIONALITY
+    const handleDragEnter = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    const handleDragLeave = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    const handleDragOver = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    const handleDrop = (e, i) => {
+        e.preventDefault();
+        e.stopPropagation();
+        moveDragged(i);
+        setDraggedPiece(null);
+    };
+
+    const handleDrag = (i) => {
+        setDraggedPiece(i);
+    }
+
     const updateBoard = () => {
         let legalMoves = [];
         if (isSelected && game.get(selectedSquare)) legalMoves = game.moves(selectedSquare).map(move => {
@@ -44,6 +81,10 @@ function Board() {
                 key={i} 
                 className="squareContainer" 
                 onClick={() => onSelection(i)}
+                onDrop={e => handleDrop(e, i)}
+                onDragOver={e => handleDragOver(e)}
+                onDragEnter={e => handleDragEnter(e)}
+                onDragLeave={e => handleDragLeave(e)}
                 >
                     <Square 
                     piece={sqr} 
@@ -52,25 +93,14 @@ function Board() {
                     color={color} 
                     selected={show} 
                     legal={isLegalMove}
+                    dragging={handleDrag}
                     />
                 </div>
             )
         });
     }
-    const [squares, setSquares] = useState(() => {
-        return updateBoard();
-    });
 
-    const randMove = () => {
-        let allMoves = game.getAllMoves(game.getTurn());
-        let randMove = Math.floor(Math.random() * allMoves.length);
-        game.move(allMoves[randMove].from, allMoves[randMove].to);
-        
-        setSquares(() => {
-            return updateBoard();
-        });
-        
-    }
+
     const displayGameOver = () => {
 
         if (!isGameOver) return <h2></h2>;

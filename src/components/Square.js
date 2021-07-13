@@ -5,6 +5,10 @@ import '../styles/Square.css';
 
 function Square(props) {
 
+    const handleDrag = (id) => {
+        props.dragging(id);
+    }
+
     let sqrColor = props.color ? 'dark' : 'light'
     let sqrType = '';
     if (props.selected) sqrType = 'selected';
@@ -13,7 +17,7 @@ function Square(props) {
         return (
             <div 
             className={`square ${sqrColor} ${sqrType}`}
-            ><Piece color={props.piece.color} type={props.piece.type}/></div>
+            ><Piece color={props.piece.color} type={props.piece.type} id={props.id} whenDragged={handleDrag}/></div>
         );
     }
     return (

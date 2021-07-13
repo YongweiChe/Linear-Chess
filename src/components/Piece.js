@@ -12,7 +12,7 @@ import wb from './assets/white-bishop.png';
 import wkn from './assets/white-knight.png';
 import wp from './assets/white-pawn.png';
 
-function Piece({color, type}) {
+function Piece({color, type, id, whenDragged}) {
     let pieces = {
         blackking: bk,
         blackqueen: bq,
@@ -27,8 +27,13 @@ function Piece({color, type}) {
         whiteknight: wkn,
         whitepawn: wp,
     }
+
+    const handleDrag = (id) => {
+        whenDragged(id);
+    }
+
     return (
-            <div className="container grab"><img className="piece" alt="piece" src={pieces[`${color}${type}`]}></img></div>
+            <div className="container grab"><img id={id} draggable="true" onDrag={() => handleDrag(id)} className="piece" alt={"piece"} src={pieces[`${color}${type}`]}></img></div>
     );
 }
 

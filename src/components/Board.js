@@ -1,7 +1,12 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
 import '../styles/Square.css';
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000")
+
+
 
 function Board() {
     const [game, setGame] = useState(new Chess());
@@ -9,18 +14,38 @@ function Board() {
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
 
+    useEffect(() => {
+        socket.on('move', function(msg) {
+            game.move(msg.from, msg.to);
+            if (game.in_checkmate()) setIsGameOver(true); 
+            if (game.in_stalemate()) setIsGameOver(true); 
+            
+            onSelection(msg.to);
+            setIsSelected(false);
+        })
+    }, []);
+
+    useEffect(() => {
+        updateBoard();
+    })
+
     const onSelection = (id) => {
+        
         if (game.get(selectedSquare) && 
             isSelected && 
             game.get(selectedSquare).color === game.getTurn() &&
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
+
             game.move(selectedSquare, id);
+            socket.emit('move', {from: selectedSquare, to: id});
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 
+
             setIsSelected(false);
         }
         else if (game.get(id)){
+            console.log("here");
             setIsSelected(() => {
                 if (!isSelected) return true;
                 if (isSelected && id === selectedSquare) return false;
@@ -105,6 +130,7 @@ function Board() {
             <br/>
             <p>It is {game.getTurn()}'s turn</p>
             {displayGameOver()}
+
         </div>
     );
 }

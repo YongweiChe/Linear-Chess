@@ -29,6 +29,22 @@ class Chess {
         }
     }
 
+
+    getGameState() {
+        return this.gameState;
+    }
+
+    importGameState(gS) {
+        console.log(gS.board);
+        this.gameState = {
+            board: [...gS.board],
+            isWhiteTurn: gS.isWhiteTurn,
+            moveCount: gS.moveCount,
+            kings: gS.kings,
+            pawns: gS.pawns
+        }
+    }
+
     getBoard() { // returns array of board
         return this.gameState.board;
     }
@@ -239,6 +255,9 @@ class Chess {
         let moves = [];
         if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
         if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
+
+        if (from < 16) this.jump(from, from + 2, moves, color, gameState.board);
+        if (from > 1) this.jump(from, from - 2, moves, color, gameState.board);
 
         return moves;
     }

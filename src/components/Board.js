@@ -2,27 +2,48 @@ import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
 import '../styles/Square.css';
-// import io from "socket.io-client";
-
-// const socket = io("http://localhost:3000")
-
 
 function Board({room, socket}) {
     const [game, setGame] = useState(new Chess());
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
-    const [isYourMove, setIsYourMove] = useState(true);
+    const [side, setSide] = useState('white');
 
     useEffect(() => {
+        let player = 100;
+        let players = 1;
+
+        socket.emit('boardRequest', room);
+
+        socket.on('boardRequest', function(room) {
+            if (players === 1) player = 1;
+            players++;
+            socket.emit('boardSend', {game: game.getGameState(), room: room, side: side, players: players});
+        });
+
+        socket.on('boardSend', function(info) {
+
+            players = info.players;
+            game.importGameState(info.game);
+            onSelection(0);
+            setIsSelected(false);
+            if (players <= 2) {
+                player = info.players
+                setSide(info.side === 'white' ? 'black' : 'white'); 
+            }
+            else if (player > 2 ) setSide('spec');
+            console.log(player);
+        }); 
+
         socket.on('move', function(msg) {
             game.move(msg.from, msg.to);
+            updateBoard();
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 
-            setIsYourMove(true);
             onSelection(msg.to);
             setIsSelected(false);
-        })
+        });
     }, []);
 
     useEffect(() => {
@@ -30,17 +51,15 @@ function Board({room, socket}) {
     })
 
     const onSelection = (id) => {
-        
-        if (isYourMove &&
+        if (side !== 'spec' &&
+            side === game.getTurn() &&
             game.get(selectedSquare) && 
             isSelected && 
             game.get(selectedSquare).color === game.getTurn() &&
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
-
             game.move(selectedSquare, id);
-            setIsYourMove(false);
-
+            
             socket.emit('move', ({from: selectedSquare, to: id, room: room}));
 
             if (game.in_checkmate()) setIsGameOver(true); 
@@ -49,7 +68,6 @@ function Board({room, socket}) {
             setIsSelected(false);
         }
         else if (game.get(id)){
-            console.log("here");
             setIsSelected(() => {
                 if (!isSelected) return true;
                 if (isSelected && id === selectedSquare) return false;
@@ -125,15 +143,20 @@ function Board({room, socket}) {
             const winner = (game.getTurn() === 'white') ? 'black' : 'white';
             return <h2>!!! {winner} Won !!!</h2>
         }
-    }        
+    }       
+    
+
     return (
-        <div>
-            <p>Room: {room}</p>
+        <div style={{textAlign: "center"}}>
+            <p>Your Room: <em>{room}</em></p>
             <div className="board">
                 {updateBoard()}
             </div>
             <br/>
-            <p><b>Your Move:</b> {`${isYourMove}`}</p>
+            <p>it is <b>{`${game.getTurn() === 'white' ? 'White' : 'Black'}`}'s</b> Turn</p>
+            <p>
+                <em>[you are playing {side}]</em>
+            </p>
             {displayGameOver()}
         </div>
     );

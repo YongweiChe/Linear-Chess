@@ -36,14 +36,14 @@ function Board(props) {
         {
             let piece = game.get(selectedSquare);
             game.move(selectedSquare, id);
-            if (game.in_checkmate()) setIsGameOver(true); 
-            if (game.in_stalemate()) setIsGameOver(true); 
-
+            if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
+            
             // BOT MOVE
             let allMoves = game.getAllMoves(side === 'white' ? 'black' : 'white');
             let randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
             const wait = await setTimeout(() => {
-                game.move(randMove.from, randMove.to)
+                if (randMove) game.move(randMove.from, randMove.to)
+                if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
                 setIsSelected(true);
                 setIsSelected(false);
             }, 1000);
@@ -122,12 +122,11 @@ function Board(props) {
 
 
     const displayGameOver = () => {
-
         if (!isGameOver) return <h2></h2>;
-        if (game.in_stalemate()) return <h2>!!! Stalemate !!!</h2>
+        if (game.in_stalemate()) return <h2>||Stalemate||</h2>
         if (game.in_checkmate()) {
-            const winner = (game.getTurn() === 'white') ? 'black' : 'white';
-            return <h2>!!! {winner} Won !!!</h2>
+            const winner = (game.getTurn() === 'white') ? 'Black' : 'White';
+            return <h1><b>||{winner} Wins by Checkmate||</b></h1>
         }
     }       
     
@@ -138,12 +137,12 @@ function Board(props) {
             <div className="board">
                 {updateBoard()}
             </div>
+            {displayGameOver()}
             <br/>
             <p>it is <b>{`${game.getTurn() === 'white' ? 'White' : 'Black'}`}'s</b> Turn</p>
             <p>
                 <em>[you are playing {side}]</em>
             </p>
-            {displayGameOver()}
         </div>
     );
 }

@@ -15,12 +15,12 @@ function Instructions() {
                 <ListItem
                     link="https://upload.wikimedia.org/wikipedia/commons/a/a0/Chess_rdt60.png"
                     piece="The Rook" 
-                    desc="Moves as usual."
+                    desc="Moves in a straight line any number of squares, but it may not jump over a piece."
                 />
                 <ListItem
                     link="https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png"
                     piece="The Bishop" 
-                    desc="Moves an even number of squares (i.e., only on squares of his own color), and jumps over squares of the other color."
+                    desc="Moves an even number of squares, and jumps over squares of the other color."
                 />
                 <ListItem
                     link="https://upload.wikimedia.org/wikipedia/commons/a/af/Chess_qdt60.png"

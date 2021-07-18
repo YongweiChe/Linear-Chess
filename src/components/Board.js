@@ -38,8 +38,7 @@ function Board({room, socket, username}) {
         socket.on('move', function(msg) {
             game.move(msg.from, msg.to);
             updateBoard();
-            if (game.in_checkmate()) setIsGameOver(true); 
-            if (game.in_stalemate()) setIsGameOver(true); 
+            if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
             onSelection(msg.to);
             setIsSelected(false);
         });
@@ -138,14 +137,13 @@ function Board({room, socket, username}) {
 
 
     const displayGameOver = () => {
-
         if (!isGameOver) return <h2></h2>;
-        if (game.in_stalemate()) return <h2>!!! Stalemate !!!</h2>
+        if (game.in_stalemate()) return <h2>||Stalemate||</h2>
         if (game.in_checkmate()) {
-            const winner = (game.getTurn() === 'white') ? 'black' : 'white';
-            return <h2>!!! {winner} Won !!!</h2>
+            const winner = (game.getTurn() === 'white') ? 'Black' : 'White';
+            return <h1><b>||{winner} Wins by Checkmate||</b></h1>
         }
-    }       
+    }     
     
 
     return (
@@ -154,12 +152,13 @@ function Board({room, socket, username}) {
             <div className="board">
                 {updateBoard()}
             </div>
+            {displayGameOver()}
             <br/>
             <p>it is <b>{`${game.getTurn() === 'white' ? 'White' : 'Black'}`}'s</b> Turn</p>
             <p>
                 <em>[you are playing {side}]</em>
             </p>
-            {displayGameOver()}
+
         </div>
     );
 }

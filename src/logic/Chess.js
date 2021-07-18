@@ -140,7 +140,6 @@ class Chess {
         else if (type === 'knight') moves = this.knightMoves(color, square, gameState);
         else if (type === 'pawn') moves = this.pawnMoves(color, square, gameState);
 
-        if (this.in_check()) {
             let legalMoves = [];
             for (let i = 0; i < moves.length; i++) {
                 let theoreticalBoard = gameState.board.map(x => x); //this.board.map
@@ -158,8 +157,6 @@ class Chess {
                 }
             }
             return legalMoves;
-        }
-        return moves;
     }
 
 
@@ -282,16 +279,12 @@ class Chess {
     }
 
     in_checkmate() { // checks whether king is in checkmate
-        if (!this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black') && this.in_check()) return true;
+        if (this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black').length === 0 && this.in_check()) return true;
         return false;
     }
 
     in_stalemate() { // checks whether stalemate
-        if (!this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black') && !this.in_check()) return true;
-        return false;
-    }
-
-    in_draw() { // NEED TO IMPLEMENT
+        if (this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black').length === 0 && !this.in_check()) return true;
         return false;
     }
 }

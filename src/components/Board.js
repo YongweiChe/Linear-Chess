@@ -3,7 +3,7 @@ import Square from './Square';
 import Chess from '../logic/Chess';
 import '../styles/Square.css';
 
-function Board({room, socket}) {
+function Board({room, socket, username}) {
     const [game, setGame] = useState(new Chess());
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
@@ -14,16 +14,16 @@ function Board({room, socket}) {
         let player = 100;
         let players = 1;
 
-        socket.emit('boardRequest', room);
+        socket.emit('boardRequest', {room, username});
 
-        socket.on('boardRequest', function(room) {
+        socket.on('boardRequest', function({room, username}) {
+            console.log("received request");
             if (players === 1) player = 1;
             players++;
             socket.emit('boardSend', {game: game.getGameState(), room: room, side: side, players: players});
         });
 
         socket.on('boardSend', function(info) {
-
             players = info.players;
             game.importGameState(info.game);
             onSelection(0);
@@ -33,7 +33,6 @@ function Board({room, socket}) {
                 setSide(info.side === 'white' ? 'black' : 'white'); 
             }
             else if (player > 2 ) setSide('spec');
-            console.log(player);
         }); 
 
         socket.on('move', function(msg) {
@@ -58,9 +57,9 @@ function Board({room, socket}) {
             game.get(selectedSquare).color === game.getTurn() &&
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
+            let piece = game.get(selectedSquare);
             game.move(selectedSquare, id);
-            
-            socket.emit('move', ({from: selectedSquare, to: id, room: room}));
+            socket.emit('move', ({from: selectedSquare, to: id, piece: piece, room: room}));
 
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 
@@ -129,7 +128,10 @@ function Board({room, socket}) {
                     legal={isLegalMove}
                     dragging={handleDrag}
                     />
+                    <br/>
+                    <em>{i}</em>
                 </div>
+
             )
         });
     }

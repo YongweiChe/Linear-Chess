@@ -35,7 +35,6 @@ class Chess {
     }
 
     importGameState(gS) {
-        console.log(gS.board);
         this.gameState = {
             board: [...gS.board],
             isWhiteTurn: gS.isWhiteTurn,
@@ -298,18 +297,3 @@ class Chess {
 }
 
 export default Chess;
-/*
-game = new Chess();
-
-game.move(6,8);
-game.move(11,9);
-game.move(5,6);
-game.move(17,10);
-game.move(8,9);
-
-console.log(game.getBoard());
-
-console.log(game.moves(6));
-console.log(game.getAllMoves('white'));
-//console.log(game.getAllMoves('black'));
-*/

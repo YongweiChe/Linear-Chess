@@ -10,6 +10,22 @@ h1 {
   font-size: 36px;
 }
 
+.chat {
+  text-align: center;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+#chat {
+  height: 12em;
+  overflow-y: scroll;
+  text-align: left;
+}
+
+#messages {
+  border: 1px solid black;
+}
+
 .board {
   width: 80%;
   max-width: 1100px;

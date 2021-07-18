@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import Board from "./components/Board";
+import OfflineBoard from "./components/OfflineBoard"
 import Nav from "./components/Nav"
 import Instructions from "./components/Instructions"
 import Chat from "./components/Chat"
@@ -9,8 +10,10 @@ const socket = io("/")
 
 const App = () => {
     const [isConnected, setIsConnected] = useState(false);
+    const [playBot, setPlayBot] = useState(false);
     const [room, setRoom] = useState('');
     const [username, setUsername] = useState('');
+    const [color, setColor] = useState('white');
     let contents;
     if (isConnected) {
         contents = (
@@ -20,6 +23,11 @@ const App = () => {
                 <Chat room={room} socket={socket} username={username}/>
             </div>
         );
+    }
+    else if (playBot) {
+        contents = (
+            <OfflineBoard color={color}/>
+        )
     }
     else {
         const handleRoom = (event) => {
@@ -36,13 +44,24 @@ const App = () => {
             setIsConnected(true);
         };
 
+        const handleClick = (event) => {
+            event.preventDefault();
+            setPlayBot(true);
+        }
+
+        const handleColor = (event) => {
+            setColor(event.target.value);
+        }
         contents = (
             <div style={{  textAlign: "center"}}>
                 <p  >Glimne's Variant</p>
+
                 <div className="ui text container">
+                                    <h3>Play Online</h3>
+                <hr />
                 <form className="ui form" onSubmit={handleSubmit}>
 
-                        <div className="field inp">
+                        <div className="field">
                             <label>
                             Enter a Username
                             </label>
@@ -55,12 +74,31 @@ const App = () => {
                             <input type="text" value={room} onChange={handleRoom} placeholder="Room Code"/>
                         </div>
                         <div className="field">
-                        <button className="big fluid ui button" type="submit" value="Join">Join</button>
+                        <button className="big fluid ui button primary" type="submit" value="Join">Join</button>
                         </div>
                     <p><b style={{fontSize: '14px', color: 'gray'}}>*the game will start once two people join with the same room code*</b></p>
                 </form>
                  </div>
+                 <br />
+                 <div className="ui text container" onSubmit={handleClick}>
+                     <h3>Play Offline</h3>
+                     <hr />
+
+                     <form className="ui form" >
+                         <div className="field">
+                            <label>
+                                Choose your Side
+                                <select value={color} onChange={handleColor}>
+                                    <option value="white">White</option>
+                                    <option value="black">Black</option>
+                                </select>
+                                </label>
+                         </div>
+                        <button className="big fluid ui button negative" type="submit" value="Submit">Play Against an AI</button>
+                    </form>
+                </div>
             </div>
+            
         )
     }
 

@@ -252,8 +252,8 @@ class Chess {
         if (from < 17) this.jump(from, from + 1, moves, color, gameState.board);
         if (from > 0) this.jump(from, from - 1, moves, color, gameState.board);
 
-        if (from < 16) this.jump(from, from + 2, moves, color, gameState.board);
-        if (from > 1) this.jump(from, from - 2, moves, color, gameState.board);
+        if (from < 16 && !gameState.board[from + 1]) this.jump(from, from + 2, moves, color, gameState.board);
+        if (from > 1  && !gameState.board[from - 1]) this.jump(from, from - 2, moves, color, gameState.board);
 
         return moves;
     }
@@ -288,8 +288,10 @@ class Chess {
 
         let count = 0;
         for (let i = 0; i < this.gameState.board.length; i++) {
-            if (i !== null) count++;
+
+            if (this.gameState.board[i] !== null) count++;
         }
+        console.log('count' + count);
         if (count <= 2) return true;
         return false;
     }

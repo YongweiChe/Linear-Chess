@@ -285,6 +285,12 @@ class Chess {
 
     in_stalemate() { // checks whether stalemate
         if (this.getAllMoves(this.gameState.isWhiteTurn ? 'white' : 'black').length === 0 && !this.in_check()) return true;
+
+        let count = 0;
+        for (let i = 0; i < this.gameState.board.length; i++) {
+            if (i !== null) count++;
+        }
+        if (count <= 2) return true;
         return false;
     }
 }

@@ -1,6 +1,9 @@
 import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
+import useSound from 'use-sound';
+import capture from './assets/capture.mp3';
+import move from './assets/move-self.mp3';
 import '../styles/Square.css';
 
 function Board(props) {
@@ -25,6 +28,14 @@ function Board(props) {
         }
         return props.color;
     });
+    const [playCapture] = useSound(
+        capture,
+        { volume: 0.35 }
+    );
+    const [playMove] = useSound(
+        move,
+        { volume: 0.5 }
+    );
 
     useEffect(() => {
         updateBoard();
@@ -39,6 +50,8 @@ function Board(props) {
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
             let piece = game.get(selectedSquare);
+            if (game.get(id)) playCapture();
+            else playMove();
             game.move(selectedSquare, id);
             let movedPiece1 = game.get(id);
             setMoves([...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}`}])
@@ -49,10 +62,12 @@ function Board(props) {
             let randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
             const wait = await setTimeout(() => {
                 if (randMove) {
-                    game.move(randMove.from, randMove.to)
-                let movedPiece2 = game.get(randMove.to);
-                let botMove = [...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}`}, {name: `${movedPiece2.color}`, message: `moved ${movedPiece2.type} from ${randMove.from} to ${randMove.to}`}];
-                setMoves(botMove);
+                    if (game.get(randMove.to)) playCapture();
+                    else playMove();
+                    game.move(randMove.from, randMove.to);
+                    let movedPiece2 = game.get(randMove.to);
+                    let botMove = [...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}`}, {name: `${movedPiece2.color}`, message: `moved ${movedPiece2.type} from ${randMove.from} to ${randMove.to}`}];
+                    setMoves(botMove);
                 }
                 
                 if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 

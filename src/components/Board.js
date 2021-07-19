@@ -1,6 +1,9 @@
 import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
+import useSound from 'use-sound';
+import capture from './assets/capture.mp3';
+import move from './assets/move-self.mp3';
 import '../styles/Square.css';
 
 function Board({room, socket, username}) {
@@ -9,6 +12,14 @@ function Board({room, socket, username}) {
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
     const [side, setSide] = useState('white');
+    const [playCapture] = useSound(
+        capture,
+        { volume: 0.35 }
+    );
+    const [playMove] = useSound(
+        move,
+        { volume: 0.5 }
+    );
 
     useEffect(() => {
         let player = 100;
@@ -36,6 +47,8 @@ function Board({room, socket, username}) {
         }); 
 
         socket.on('move', function(msg) {
+            if (game.get(msg.to)) playCapture();
+            else playMove();
             game.move(msg.from, msg.to);
             updateBoard();
             if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
@@ -57,7 +70,10 @@ function Board({room, socket, username}) {
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
             let piece = game.get(selectedSquare);
+            if (game.get(id)) playCapture();
+            else playMove();
             game.move(selectedSquare, id);
+
             socket.emit('move', ({from: selectedSquare, to: id, piece: piece, room: room}));
 
             if (game.in_checkmate()) setIsGameOver(true); 

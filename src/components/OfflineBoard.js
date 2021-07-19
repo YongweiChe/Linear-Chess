@@ -50,11 +50,15 @@ function Board(props) {
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
             let piece = game.get(selectedSquare);
-            if (game.get(id)) playCapture();
+            let take = game.get(id);
+            if (take) playCapture();
             else playMove();
             game.move(selectedSquare, id);
             let movedPiece1 = game.get(id);
-            setMoves([...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}`}])
+            let humanMove;
+            if (take) humanMove = [...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}. Captured ${take.type}.`}];
+            else humanMove = [...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}.`}];
+            setMoves(humanMove);
             if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
             
             // BOT MOVE
@@ -62,11 +66,14 @@ function Board(props) {
             let randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
             const wait = await setTimeout(() => {
                 if (randMove) {
-                    if (game.get(randMove.to)) playCapture();
+                    take = game.get(randMove.to);
+                    if (take) playCapture();
                     else playMove();
                     game.move(randMove.from, randMove.to);
                     let movedPiece2 = game.get(randMove.to);
-                    let botMove = [...moves, {name: `${movedPiece1.color}`, message: `moved ${movedPiece1.type} from ${selectedSquare} to ${id}`}, {name: `${movedPiece2.color}`, message: `moved ${movedPiece2.type} from ${randMove.from} to ${randMove.to}`}];
+                    let botMove;
+                    if (take) botMove = [...humanMove, {name: `${movedPiece2.color}`, message: `moved ${movedPiece2.type} from ${randMove.from} to ${randMove.to}. Captured ${take.type}.`}]
+                    else botMove = [...humanMove, {name: `${movedPiece2.color}`, message: `moved ${movedPiece2.type} from ${randMove.from} to ${randMove.to}.`}];
                     setMoves(botMove);
                 }
                 

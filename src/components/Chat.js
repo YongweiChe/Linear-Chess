@@ -25,8 +25,12 @@ function Chat({room, socket, username}) {
     }, [receivedMsg]);
 
     useEffect(() => {
-        if (receivedMove.piece !== '') moves.current = [...moves.current, {name: `${receivedMove.piece.color}`, message: `moved ${receivedMove.piece.type} from ${receivedMove.from} to ${receivedMove.to}`}];
-        forceUpdate();
+        if (receivedMove.piece !== '') {
+            if (receivedMove.take) moves.current = [...moves.current, {name: `${receivedMove.piece.color}`, message: `moved ${receivedMove.piece.type} from ${receivedMove.from} to ${receivedMove.to}. Captured ${receivedMove.take.type}.`}];
+            else moves.current = [...moves.current, {name: `${receivedMove.piece.color}`, message: `moved ${receivedMove.piece.type} from ${receivedMove.from} to ${receivedMove.to}.`}];
+            
+        }
+            forceUpdate();
     }, [receivedMove])
 
     const renderChat = () => {

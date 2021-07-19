@@ -76,11 +76,12 @@ function Board({room, socket, username}) {
             game.moves(selectedSquare).map(sqr => sqr.to).includes(id)) 
         {
             let piece = game.get(selectedSquare);
-            if (game.get(id)) playCapture();
+            let take = game.get(id);
+            if (take) playCapture();
             else playMove();
             game.move(selectedSquare, id);
-
-            socket.emit('move', ({from: selectedSquare, to: id, piece: piece, room: room}));
+            
+            socket.emit('move', ({from: selectedSquare, to: id, piece: piece, room: room, take: take}));
 
             if (game.in_checkmate()) setIsGameOver(true); 
             if (game.in_stalemate()) setIsGameOver(true); 

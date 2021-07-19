@@ -10,16 +10,15 @@ h1 {
   font-size: 36px;
 }
 
-.chat {
-  text-align: center;
-  padding-left: 1em;
-  padding-right: 1em;
-}
-
 #chat {
   height: 12em;
   overflow-y: scroll;
   text-align: left;
+}
+
+#moves {
+  height: 15em;
+  overflow-y: scroll;
 }
 
 #messages {

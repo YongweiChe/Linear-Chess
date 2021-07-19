@@ -1,25 +1,37 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef, useReducer} from 'react';
 import '../styles/Square.css';
 
 function Chat({room, socket, username}) {
     const [msg, setMsg] = useState('');
-    const [chat, setChat] = useState([]);
-    const [moves, setMoves] = useState([]);
-
+    const [receivedMsg, setReceivedMsg] = useState({name: '', message: ''}); 
+    const [receivedMove, setReceivedMove] = useState({from: '', to: '', piece: '', room: ''});
+    const chat = useRef([]);
+    const moves = useRef([]);
+    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
 
     useEffect(() => {
         socket.on('message', ({name, message, room}) => {
-            setChat([...chat, {name, message}])
+            setReceivedMsg({name: name, message: message});
         })
 
         socket.on('moveMsg', (msg) => {
-            setMoves([...moves, {name: `${msg.piece.color}`, message: `moved ${msg.piece.type} from ${msg.from} to ${msg.to}`}])
+            setReceivedMove(msg)
         })
-    })
+    }, [])
+
+    useEffect(() => {
+        if (receivedMsg.message !== '') chat.current = [...chat.current, receivedMsg]
+        forceUpdate();
+    }, [receivedMsg]);
+
+    useEffect(() => {
+        if (receivedMove.piece !== '') moves.current = [...moves.current, {name: `${receivedMove.piece.color}`, message: `moved ${receivedMove.piece.type} from ${receivedMove.from} to ${receivedMove.to}`}];
+        forceUpdate();
+    }, [receivedMove])
 
     const renderChat = () => {
         return ( 
-            chat.map(({name, message}, index) => {
+            chat.current.map(({name, message}, index) => {
                 return (
                     <div key={index}>
                         <p><b>{name}:</b> {message}</p>
@@ -31,7 +43,7 @@ function Chat({room, socket, username}) {
 
     const renderMoves = () => {
         return ( 
-            moves.map(({name, message}, index) => {
+            moves.current.map(({name, message}, index) => {
                 let color = index % 2 === 0 ? '#d3d3d3' : 'white'
                 return (
                     <div key={index} style={{backgroundColor: color}}>
@@ -49,7 +61,6 @@ function Chat({room, socket, username}) {
     const onMessageSubmit = e => {
         e.preventDefault();
         socket.emit('message', {name: username, message: msg, room: room});
-        console.log(username);
         setMsg('');
     }
 
@@ -77,9 +88,9 @@ function Chat({room, socket, username}) {
                     </form>
                 </div>
                 <div className="eight wide column chat">
-                    <h2 className="chat">Moves</h2>
+                    <h2 >Moves</h2>
                     <hr />
-                    <div className="">
+                    <div className="" id="moves">
                         {renderMoves()}
                     </div>
                 </div>

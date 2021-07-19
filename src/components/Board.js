@@ -11,7 +11,7 @@ function Board({room, socket, username}) {
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSquare, setSelectedSquare] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
-    const [opponentCapture, setOpponentCapture] = useState(false);
+    const [opponentCapture, setOpponentCapture] = useState({capture: false, number: 0});
     const [side, setSide] = useState('white');
     const [playCapture] = useSound(
         capture,
@@ -48,11 +48,8 @@ function Board({room, socket, username}) {
         }); 
 
         socket.on('move', function(msg) {
-            setOpponentCapture(() => {
-                return !opponentCapture;
-            })
-            if (game.get(msg.to)) setOpponentCapture(true);
-            else setOpponentCapture(false);
+            if (game.get(msg.to)) setOpponentCapture({capture: true, number: opponentCapture.number+1});
+            else setOpponentCapture({capture: false, number: opponentCapture.number+1});
             game.move(msg.from, msg.to);
             updateBoard();
             if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true);
@@ -66,7 +63,7 @@ function Board({room, socket, username}) {
     })
 
     useEffect(() => {
-        if (opponentCapture) playCapture();
+        if (opponentCapture.capture) playCapture();
         else playMove();
     }, [opponentCapture]);
 

@@ -13,7 +13,8 @@ const App = () => {
     const [playBot, setPlayBot] = useState(false);
     const [room, setRoom] = useState('');
     const [username, setUsername] = useState('');
-    const [color, setColor] = useState('white');
+    const [color, setColor] = useState('black');
+    const [depth, setDepth] = useState(2);
     let contents;
     if (isConnected) {
         contents = (
@@ -26,7 +27,7 @@ const App = () => {
     }
     else if (playBot) {
         contents = (
-            <OfflineBoard color={color}/>
+            <OfflineBoard color={color} depth={depth}/>
         )
     }
     else {
@@ -51,6 +52,10 @@ const App = () => {
 
         const handleColor = (event) => {
             setColor(event.target.value);
+        }
+
+        const handleDepth = (event) => {
+            setDepth(event.target.value);
         }
         contents = (
             <div style={{  textAlign: "center"}}>
@@ -89,10 +94,19 @@ const App = () => {
                                 <label>
                                     Choose your Side
                                     <select value={color} onChange={handleColor}>
-                                        <option value="white">White</option>
                                         <option value="black">Black</option>
+                                        <option value="white">White</option>
                                     </select>
-                                    </label>
+                                </label>
+                            </div>
+                            <div className="field">
+                                <label>
+                                    Choose AI Strength
+                                    <select value={depth} onChange={handleDepth}>
+                                        <option value={2}>LVL 1</option>
+                                        <option value={4}>LVL 2</option>
+                                    </select>
+                                </label>
                             </div>
                             <button className="big fluid ui button negative" type="submit" value="Submit">Play Against an AI</button>
                         </form>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect} from 'react';
 import Square from './Square';
 import Chess from '../logic/Chess';
+import findMove from '../logic/ChessBot';
+
 import useSound from 'use-sound';
 import capture from './assets/capture.mp3';
 import move from './assets/move-self.mp3';
@@ -62,8 +64,14 @@ function Board(props) {
             if (game.in_checkmate() || game.in_stalemate()) setIsGameOver(true); 
             
             // BOT MOVE
-            let allMoves = game.getAllMoves(side === 'white' ? 'black' : 'white');
-            let randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+            
+            let randMove = findMove(game, props.depth);
+            if (game.getMoveCount() === 2) {
+                let allMoves = game.getAllMoves(props.color === 'white' ? 'black' : 'white');
+                randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+            }
+            console.log(randMove);
+            console.log(props.depth);
             const wait = await setTimeout(() => {
                 if (randMove) {
                     take = game.get(randMove.to);
@@ -180,7 +188,7 @@ function Board(props) {
     return (
         <div>
             <div style={{textAlign: "center"}}>
-                <p>NOTE: This is a placeholder bot that makes random legal moves. The real AI is currently being developed.</p>
+                
                 <div className="board">
                     {updateBoard()}
                 </div>
@@ -195,10 +203,17 @@ function Board(props) {
             <div className="chat"> 
             <div className="ui grid">
                 <div className="eight wide column">
-                    <h2>You are Playing: Random Bot</h2>
+                    <h2>You are Playing: Bot of Depth {props.depth}</h2>
                     <hr />
                     <div>
-                        <p>This bot was created by: <em>Yongwei Che</em></p>
+                        <p>
+                            <b>Methodology: </b>
+                            <ul>
+                            <li>This bot uses the Minimax algorithm and analyzes at a depth of {props.depth}.</li>
+                            <li>Alpha-beta pruning is utilized to speed up the computation.</li>
+                            <li>The bot's first move is random to provide more variety to the game.</li>
+                            </ul>
+                        </p>
                     </div>
                 </div>
                 <div className="eight wide column chat">

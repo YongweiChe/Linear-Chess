@@ -31,7 +31,14 @@ class Chess {
 
 
     getGameState() {
-        return this.gameState;
+        let gS = this.gameState;
+        return {
+            board: [...gS.board],
+            isWhiteTurn: gS.isWhiteTurn,
+            moveCount: gS.moveCount,
+            kings: {white: gS.kings.white, black: gS.kings.black },
+            pawns: {white: gS.pawns.white, black: gS.pawns.black }
+        };
     }
 
     importGameState(gS) {
@@ -291,10 +298,11 @@ class Chess {
 
             if (this.gameState.board[i] !== null) count++;
         }
-        console.log('count' + count);
         if (count <= 2) return true;
         return false;
     }
+
+    
 }
 
 export default Chess;
